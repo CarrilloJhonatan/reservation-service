@@ -16,11 +16,11 @@
   ],
   "reservations": [
     {
-      "_comment": "OK — lunes 15-jun-2026 10:00 Bogotá",
+      "_comment": "OK — lunes 22-jun-2026 10:00 Bogotá",
       "user_email": "ana@example.com",
       "service_name": "Corte clásico",
       "professional_name": "Pedro",
-      "start_time": "2026-06-15T10:00:00-05:00"
+      "start_time": "2026-06-22T10:00:00-05:00"
     },
     {
       "_comment": "OK — martes, otro profesional",
@@ -34,7 +34,7 @@
       "user_email": "carla@example.com",
       "service_name": "Corte clásico",
       "professional_name": "Pedro",
-      "start_time": "2026-06-15T10:15:00-05:00"
+      "start_time": "2026-06-22T10:15:00-05:00"
     },
     {
       "_comment": "INVÁLIDA — formato DD/MM/YYYY no soportado por ISO 8601",
