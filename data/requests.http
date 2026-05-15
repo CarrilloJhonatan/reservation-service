@@ -1,0 +1,50 @@
+### Healthcheck
+GET http://127.0.0.1:8000/health
+
+### Crear usuario
+POST http://127.0.0.1:8000/users
+Content-Type: application/json
+
+{
+  "name": "Ana Torres",
+  "email": "ana@example.com",
+  "is_premium": false
+}
+
+### Crear usuario premium
+POST http://127.0.0.1:8000/users
+Content-Type: application/json
+
+{
+  "name": "Bruno Méndez",
+  "email": "bruno@example.com",
+  "is_premium": true
+}
+
+### Crear servicio
+POST http://127.0.0.1:8000/services
+Content-Type: application/json
+
+{
+  "name": "Corte clásico",
+  "duration_minutes": 30,
+  "price": 35000,
+  "non_refundable": false
+}
+
+### Crear reserva (lunes 11 mayo 2026 10:00 Bogotá)
+POST http://127.0.0.1:8000/reservations
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "service_id": 1,
+  "professional_name": "Pedro",
+  "start_time": "2026-05-11T10:00:00-05:00"
+}
+
+### Cancelar reserva
+POST http://127.0.0.1:8000/reservations/1/cancel
+
+### Listar reservas por usuario y rango
+GET http://127.0.0.1:8000/reservations?user_id=1&start=2026-05-01T00:00:00-05:00&end=2026-05-31T23:59:59-05:00

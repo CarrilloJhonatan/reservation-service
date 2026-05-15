@@ -1,0 +1,17 @@
+{
+  "users": [
+    { "name": "Ana Torres",      "email": "ana@example.com",   "is_premium": false },
+    { "name": "Bruno Méndez",    "email": "bruno@example.com", "is_premium": true  },
+    { "name": "Carla Pineda",    "email": "carla@example.com", "is_premium": false },
+    { "name": "  Diego  Ríos ",  "email": "DIEGO@EXAMPLE.COM", "is_premium": false },
+    { "name": "Email inválido",  "email": "no-es-un-email",    "is_premium": false },
+    { "name": "Sin nombre",      "email": "sinnombre@example.com", "is_premium": false }
+  ],
+  "services": [
+    { "name": "Corte clásico",   "duration_minutes": 30,  "price": 35000,  "non_refundable": false },
+    { "name": "Tinte completo",  "duration_minutes": 120, "price": 180000, "non_refundable": false },
+    { "name": "Sesión spa",      "duration_minutes": 90,  "price": 220000, "non_refundable": true  },
+    { "name": "Servicio gratis", "duration_minutes": 30,  "price": -10000, "non_refundable": false },
+    { "name": "Duración cero",   "duration_minutes": 0,   "price": 50000,  "non_refundable": false }
+  ]
+}
