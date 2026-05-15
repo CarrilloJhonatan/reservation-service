@@ -1,5 +1,7 @@
 # Reservation Service
 
+![tests](https://github.com/CarrilloJhonatan/reservation-service/actions/workflows/tests.yml/badge.svg)
+
 API de gestión de reservas desarrollada con **FastAPI + SQLite + SQLAlchemy**.
 Implementa reglas de negocio reales: horario hábil Bogotá, festivos Colombia 2026,
 solapamiento de profesionales, límites de cancelación con políticas estándar/premium
