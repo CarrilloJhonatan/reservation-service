@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index, Integer, Numeric, String
+from sqlalchemy import ForeignKey, Index, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.database import Base, UTCDateTime
 from app.enums import ReservationStatus
 from app.models.service import Service
 from app.models.user import User
@@ -19,15 +19,15 @@ class Reservation(Base):
 
     # SQLite no preserva tzinfo: trabajamos siempre en UTC al persistir y
     # convertimos a Bogotá en la capa de aplicación. Ver utils/datetime_utils.
-    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    start_time: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
+    end_time: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
 
     status: Mapped[ReservationStatus] = mapped_column(
         String(20), nullable=False, default=ReservationStatus.ACTIVE, index=True
     )
     refund_amount: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, nullable=False)
+    cancelled_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
 
     user: Mapped[User] = relationship(User, lazy="joined")
     service: Mapped[Service] = relationship(Service, lazy="joined")

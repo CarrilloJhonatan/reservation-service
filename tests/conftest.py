@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from app.database import Base
 from app.models import Reservation, Service, User
 from app.enums import ReservationStatus
+from app.utils.holidays import is_colombian_holiday
 
 BOG = ZoneInfo("America/Bogota")
 
@@ -79,6 +80,6 @@ def next_weekday_at(hour: int, days_ahead: int = 3) -> datetime:
     saltando domingos."""
     base = datetime.now(tz=BOG).replace(hour=hour, minute=0, second=0, microsecond=0)
     target = base + timedelta(days=days_ahead)
-    while target.weekday() == 6:  # domingo
+    while target.weekday() == 6 or is_colombian_holiday(target.date()):
         target += timedelta(days=1)
     return target

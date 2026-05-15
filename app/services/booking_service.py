@@ -1,5 +1,7 @@
 """Lógica de negocio: crear, cancelar, listar reservas."""
 import logging
+import threading
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
@@ -22,6 +24,19 @@ from app.services.validation_service import validate_booking_time
 from app.utils.datetime_utils import ensure_aware_bogota, now_bogota
 
 logger = logging.getLogger(__name__)
+
+# Concurrencia básica: serializamos el check-then-insert por profesional
+# dentro del proceso. Esto cierra la ventana de carrera en SQLite (que no
+# soporta SELECT ... FOR UPDATE) cuando uvicorn corre con un solo worker.
+# Para múltiples workers / procesos, la solución correcta es PostgreSQL
+# con un constraint EXCLUDE sobre tstzrange (ver README).
+_locks_guard = threading.Lock()
+_professional_locks: dict[str, threading.Lock] = defaultdict(threading.Lock)
+
+
+def _lock_for(professional_name: str) -> threading.Lock:
+    with _locks_guard:
+        return _professional_locks[professional_name]
 
 
 class BookingService:
@@ -52,34 +67,31 @@ class BookingService:
                 f"El usuario ya tiene {MAX_ACTIVE_RESERVATIONS_PER_USER} reservas activas."
             )
 
-        # Conflicto de profesional.
-        # NOTA: SQLite no soporta SELECT ... FOR UPDATE. Esto deja una pequeña ventana
-        # de carrera entre el check y el insert. En PostgreSQL se resolvería con
-        # SELECT ... FOR UPDATE dentro de una transacción serializable, o con un
-        # constraint EXCLUDE usando rangos temporales (btree_gist).
-        conflict = self.reservations.find_overlap_for_professional(
-            payload.professional_name, start, end
-        )
-        if conflict is not None:
-            raise BookingConflictError(
-                f"El profesional ya tiene una reserva entre "
-                f"{conflict.start_time.isoformat()} y {conflict.end_time.isoformat()}."
+        # Check de solapamiento + insert atómico por profesional.
+        with _lock_for(payload.professional_name):
+            conflict = self.reservations.find_overlap_for_professional(
+                payload.professional_name, start, end
             )
+            if conflict is not None:
+                raise BookingConflictError(
+                    f"El profesional ya tiene una reserva entre "
+                    f"{conflict.start_time.isoformat()} y {conflict.end_time.isoformat()}."
+                )
 
-        reservation = Reservation(
-            user_id=user.id,
-            service_id=service.id,
-            professional_name=payload.professional_name,
-            start_time=start,
-            end_time=end,
-            status=ReservationStatus.ACTIVE,
-            refund_amount=None,
-            created_at=now,
-            cancelled_at=None,
-        )
-        self.reservations.add(reservation)
-        self.db.commit()
-        self.db.refresh(reservation)
+            reservation = Reservation(
+                user_id=user.id,
+                service_id=service.id,
+                professional_name=payload.professional_name,
+                start_time=start,
+                end_time=end,
+                status=ReservationStatus.ACTIVE,
+                refund_amount=None,
+                created_at=now,
+                cancelled_at=None,
+            )
+            self.reservations.add(reservation)
+            self.db.commit()
+            self.db.refresh(reservation)
         logger.info(
             "Reserva creada id=%s user=%s prof=%s start=%s",
             reservation.id, user.id, payload.professional_name, start.isoformat(),

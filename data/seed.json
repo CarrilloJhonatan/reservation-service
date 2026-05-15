@@ -13,5 +13,69 @@
     { "name": "Sesión spa",      "duration_minutes": 90,  "price": 220000, "non_refundable": true  },
     { "name": "Servicio gratis", "duration_minutes": 30,  "price": -10000, "non_refundable": false },
     { "name": "Duración cero",   "duration_minutes": 0,   "price": 50000,  "non_refundable": false }
+  ],
+  "reservations": [
+    {
+      "_comment": "OK — lunes 15-jun-2026 10:00 Bogotá",
+      "user_email": "ana@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Pedro",
+      "start_time": "2026-06-15T10:00:00-05:00"
+    },
+    {
+      "_comment": "OK — martes, otro profesional",
+      "user_email": "bruno@example.com",
+      "service_name": "Tinte completo",
+      "professional_name": "Laura",
+      "start_time": "2026-06-16T14:30:00-05:00"
+    },
+    {
+      "_comment": "CONFLICTO esperado — solapa con la primera reserva del seed",
+      "user_email": "carla@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Pedro",
+      "start_time": "2026-06-15T10:15:00-05:00"
+    },
+    {
+      "_comment": "INVÁLIDA — formato DD/MM/YYYY no soportado por ISO 8601",
+      "user_email": "carla@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Juan",
+      "start_time": "15/06/2026 10:00"
+    },
+    {
+      "_comment": "INVÁLIDA — datetime naive (sin timezone)",
+      "user_email": "ana@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Pedro",
+      "start_time": "2026-06-15T10:00:00"
+    },
+    {
+      "_comment": "INVÁLIDA — fecha en el pasado",
+      "user_email": "ana@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Pedro",
+      "start_time": "2025-01-10T10:00:00-05:00"
+    },
+    {
+      "_comment": "INVÁLIDA — falta professional_name",
+      "user_email": "carla@example.com",
+      "service_name": "Corte clásico",
+      "start_time": "2026-06-17T11:00:00-05:00"
+    },
+    {
+      "_comment": "INVÁLIDA — domingo (21-jun-2026)",
+      "user_email": "ana@example.com",
+      "service_name": "Sesión spa",
+      "professional_name": "Inés",
+      "start_time": "2026-06-21T10:00:00-05:00"
+    },
+    {
+      "_comment": "INVÁLIDA — festivo (20-jul-2026, Independencia)",
+      "user_email": "bruno@example.com",
+      "service_name": "Corte clásico",
+      "professional_name": "Laura",
+      "start_time": "2026-07-20T09:00:00-05:00"
+    }
   ]
 }

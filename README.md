@@ -134,9 +134,12 @@ reservation-service/
 
 ## Trade-offs y limitaciones
 
-- **SQLite no soporta `SELECT ... FOR UPDATE`.** El check de solapamiento y el insert
-  no son atómicos: hay una ventana de carrera ínfima entre validar y persistir.
-  Para producción se documenta abajo cómo cerrarla.
+- **Concurrencia.** SQLite no soporta `SELECT ... FOR UPDATE`. Para cerrar la
+  ventana de carrera entre check de solapamiento e insert dentro de un proceso,
+  `BookingService` usa un `threading.Lock` por `professional_name`. Esto es
+  defendible para uvicorn con un solo worker. Para múltiples workers o procesos
+  la solución correcta es PostgreSQL con constraint `EXCLUDE` sobre `tstzrange`
+  (ver sección de migración).
 - **Festivos hardcoded** son válidos solo para 2026.
 - **Sin autenticación / autorización.** Fuera del alcance de la prueba.
 - **Sin cache.** No es necesario al volumen actual.
