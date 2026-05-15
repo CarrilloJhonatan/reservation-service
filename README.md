@@ -7,6 +7,27 @@ y servicios no reembolsables.
 
 ---
 
+## Contexto profesional
+
+La prueba permitía stack libre. Elegí **Python + FastAPI + SQLAlchemy** porque
+es exactamente el mismo patrón que vengo aplicando en producción:
+
+- **EvolveAPI (EvolvePos, 2024–2026)**: construí una API en Python/FastAPI que
+  integra WordPress, WooCommerce y Uber Direct con el software interno de la
+  empresa. Sincroniza productos en tiempo real entre 10+ tiendas, automatiza
+  150+ transacciones diarias y soporta hasta 500 órdenes concurrentes.
+- Mi día a día principal es **WordPress / WooCommerce / PHP** (40+ sitios,
+  plugins propios como [`woo-tax-control`](https://github.com/CarrilloJhonatan/woo-tax-control)
+  y `Uber-Direct-Plugin`). Aplico la misma arquitectura en capas (lógica
+  centralizada en services, validación en frontera, ORM o `$wpdb` con prepared
+  statements en repositorios) tanto en Python como en plugins de WordPress.
+
+Esto deja en evidencia el criterio detrás de las decisiones que verás abajo:
+no son patrones académicos, son las mismas decisiones que tomo cuando integro
+APIs externas con WooCommerce en producción.
+
+---
+
 ## Stack
 
 - Python 3.12+

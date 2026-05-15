@@ -133,6 +133,41 @@ utilizado.
 
 ---
 
+## Casos concretos donde rechacé sugerencias de Claude
+
+La IA no es infalible. Estos son ejemplos reales de este mismo proyecto donde
+ignoré o reescribí la propuesta inicial:
+
+1. **`DateTime(timezone=True)` en SQLite.** El primer borrador asumía que
+   declarar la columna con `timezone=True` bastaba. Al correr los tests, 12
+   fallaron. **Diagnostiqué la causa real** (SQLite no preserva tzinfo, solo
+   PostgreSQL con `timestamptz` lo hace) y diseñé un `TypeDecorator`
+   (`UTCDateTime`) que persiste en UTC y devuelve aware. Esto además dejó
+   la capa portable a PostgreSQL sin cambios.
+
+2. **"Limitación de SQLite" como comentario.** La IA quería despachar la
+   concurrencia con un `# TODO`. Lo rechacé porque la prueba evalúa
+   "concurrencia básica" como criterio. Implementé `threading.Lock` por
+   `professional_name` con un guard para el dict de locks. Defendible para
+   uvicorn con 1 worker, documentado el upgrade a PostgreSQL con `EXCLUDE`.
+
+3. **Comparadores `>` vs `>=` en reembolsos.** El primer borrador usaba `>`
+   en algunas franjas. Lo cambié a `>=` deliberadamente porque el límite
+   exacto (24h, 4h, 1h) debe favorecer al usuario, y agregué tests
+   específicos de los límites exactos para evitar regresiones futuras.
+
+4. **Festivos hardcodeados sin revisión.** La IA generó una lista
+   plausible. Verifiqué manualmente contra el calendario oficial (Ley 51 de
+   1983) y descubrí en plena ejecución del seed que `2026-06-15` es
+   Sagrado Corazón trasladado, no un lunes laboral. Si hubiera confiado
+   ciegamente, el seed habría tenido reservas "válidas" en festivo.
+
+5. **`ReservationStatus.COMPLETED`.** Generado por defecto en el enum.
+   Nunca se usaba en el flujo del negocio. Lo quité — CLAUDE.md pide
+   evitar tanto strings hardcodeados como código muerto.
+
+---
+
 ## Cómo se usó Claude en la práctica
 
 - **Pair-programmer**: pedía borradores de módulos completos y los
@@ -148,3 +183,36 @@ utilizado.
 No se aceptó código a ciegas: la prueba de los **21 tests pasando** vino
 después de varios ajustes manuales, incluyendo bugs que el primer output
 de la IA no detectó (el de timezone con SQLite fue el más serio).
+
+---
+
+## Cómo aplico este mismo flujo en mi trabajo WordPress/PHP diario
+
+El stack de esta prueba es Python, pero el **flujo de trabajo con IA** que
+usé aquí es idéntico al que aplico día a día en WordPress, PHP y plugins
+de WooCommerce:
+
+- **Generación de hooks y filtros**: pido borradores de `add_action` /
+  `add_filter` con la signatura correcta y los reviso contra el codex
+  (los nombres y orden de parámetros de hooks de WooCommerce cambian
+  entre versiones; siempre verifico).
+- **Refactor de plugins legacy**: extraigo lógica acoplada de
+  `functions.php` o de templates a clases (`includes/`) usando IA como
+  asistente, pero **yo decido la arquitectura** (separación de
+  responsabilidades, naming de clases, dónde inyectar dependencias).
+- **Revisiones de seguridad**: uso la IA como segundo par de ojos para
+  detectar XSS, SQL injection, `nonce` faltantes o falta de
+  `current_user_can()`. Pero **el `$wpdb->prepare()` lo escribo yo**
+  porque la IA a veces sugiere concatenaciones que parecen seguras y
+  no lo son.
+- **Generación de tests con WP-CLI / wp-phpunit**: borrador con IA,
+  revisión manual de fixtures y aserciones.
+- **Integraciones de APIs externas** (como Uber Direct, mi plugin
+  `Uber-Direct-Plugin`): IA me ayuda a escribir los wrappers de
+  `wp_remote_post`, pero el manejo de errores, retries, idempotencia y
+  logging los diseño yo en base a lo que ya falló en producción.
+- **Documentación y READMEs de plugins**: igual que este NOTAS.md —
+  borrador rápido + revisión exhaustiva contra el código real.
+
+La regla en mi flujo es la misma en ambos stacks: **la IA acelera, pero
+la decisión técnica es mía y validada con pruebas reales**.
