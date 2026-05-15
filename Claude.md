@@ -1,5 +1,13 @@
 # CLAUDE.md
 
+> Este archivo contiene las instrucciones de proyecto que uso con **Claude Code**
+> (Anthropic) para mantener consistencia técnica durante el desarrollo.
+> Documenta convenciones, arquitectura y reglas de negocio que la IA debe
+> respetar al generar o modificar código. Es la forma estándar de dirigir a
+> Claude Code en un proyecto y refleja mi flujo de trabajo con IA como apoyo
+> real (no como sustituto del criterio técnico). Ver `NOTAS.md` para casos
+> concretos de uso y rechazo de sugerencias durante esta prueba.
+
 ## Contexto del Proyecto
 
 Este proyecto es una prueba técnica para un sistema de gestión de reservas utilizando FastAPI, SQLite y SQLAlchemy.
